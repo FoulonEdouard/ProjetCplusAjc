@@ -31,13 +31,17 @@ public:
 
 private slots:
     void ouvrir_fichier();
-    void creer_onglet();
+
 
 
 
     void on_tabWidget_tabCloseRequested(int index);
 
 
+    void save();
+    void affiche_ligne();
+
+    void affiche_ligne_colonne();
 private:
     Ui::MainWindow *ui;
 };

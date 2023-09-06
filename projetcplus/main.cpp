@@ -9,6 +9,7 @@
 #include<QIODevice>
 #include<QDir>
 #include<QTabWidget>
+#include<QTextCursor>
 
 int main(int argc, char *argv[])
 {

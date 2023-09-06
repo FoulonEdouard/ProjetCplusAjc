@@ -59,18 +59,12 @@
     </property>
     <addaction name="actionOuvrir"/>
     <addaction name="actionSauvegarder"/>
-    <addaction name="actionSave_as"/>
-    <addaction name="actionNew"/>
    </widget>
-   <widget class="QMenu" name="menurecherche">
+   <widget class="QMenu" name="menuAffichage">
     <property name="title">
-     <string>Edition</string>
+     <string>Affichage</string>
     </property>
-   </widget>
-   <widget class="QMenu" name="menuFormat">
-    <property name="title">
-     <string>Format</string>
-    </property>
+    <addaction name="actionLigne_colonne"/>
    </widget>
    <widget class="QMenu" name="menuRecherche">
     <property name="title">
@@ -78,8 +72,7 @@
     </property>
    </widget>
    <addaction name="menuFichier"/>
-   <addaction name="menurecherche"/>
-   <addaction name="menuFormat"/>
+   <addaction name="menuAffichage"/>
    <addaction name="menuRecherche"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -101,6 +94,21 @@
   <action name="actionNew">
    <property name="text">
     <string>New</string>
+   </property>
+  </action>
+  <action name="actionLigne">
+   <property name="text">
+    <string>Ligne</string>
+   </property>
+  </action>
+  <action name="actionColonne">
+   <property name="text">
+    <string>Colonne</string>
+   </property>
+  </action>
+  <action name="actionLigne_colonne">
+   <property name="text">
+    <string>Ligne_colonne</string>
    </property>
   </action>
  </widget>
