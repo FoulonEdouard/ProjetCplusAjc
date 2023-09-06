@@ -70,6 +70,7 @@
     <property name="title">
      <string>Recherche</string>
     </property>
+    <addaction name="actionOuvrir_fenetre_recherche"/>
    </widget>
    <addaction name="menuFichier"/>
    <addaction name="menuAffichage"/>
@@ -109,6 +110,11 @@
   <action name="actionLigne_colonne">
    <property name="text">
     <string>Ligne_colonne</string>
+   </property>
+  </action>
+  <action name="actionOuvrir_fenetre_recherche">
+   <property name="text">
+    <string>Ouvrir fenetre recherche</string>
    </property>
   </action>
  </widget>
