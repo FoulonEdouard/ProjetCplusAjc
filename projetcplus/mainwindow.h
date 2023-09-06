@@ -25,6 +25,8 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = nullptr);
+
+
     ~MainWindow();
 
 private slots:
@@ -34,6 +36,7 @@ private slots:
 
 
     void on_tabWidget_tabCloseRequested(int index);
+
 
 private:
     Ui::MainWindow *ui;
