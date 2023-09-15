@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include "curl/curl.h"
 #include <string>
+#include"gd.h"
 
 class Loader
 {

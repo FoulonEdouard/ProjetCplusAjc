@@ -9,4 +9,9 @@ SOURCES += \
 
 HEADERS += \
     loader.h
+
 LIBS += -lcurl
+LIBS += -lgd -L/usr/include/gd.h
+
+
+
