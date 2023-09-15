@@ -8,7 +8,8 @@ class Loader
 {
 public:
     Loader();
-    void load(const std::string &url, const std::string &filename);
+    void load(const std::string &url);
+    std::string readBuffer;
 };
 
 #endif // LOADER_H

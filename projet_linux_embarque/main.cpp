@@ -9,18 +9,18 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
+
     Loader loader;
-    loader.load("https://www.data.gouv.fr/fr/datasets/r/ecb94e56-22d4-40ee-bf40-c7890569d5bd","/home/edouard/projet_linux_embarque/data.JSON");
+    loader.load("https://www.data.gouv.fr/fr/datasets/r/ecb94e56-22d4-40ee-bf40-c7890569d5bd");
 
     //récupère le fichier et crée un parse JSON
 
-    ifstream f("/home/edouard/projet_linux_embarque/data.JSON");
-    json data = json::parse(f);
+    json data = json::parse(loader.readBuffer);
 
     //Lectuure dans le JSON
 
     int i;
-    /*for(i=0; i<=131;i++)
+    for(i=0; i<=131;i++)
     {
     cout << "la population est:  "<<setw(4)<<data[i]["fields"]["segment_client"]<<endl;
     }
@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
     {
     cout << "La conso a trla semaine numéro "<<i<<" est: "<<setw(4)<<data[i]["fields"]["conso_a_tr"]<<endl;
     }
-    */
+/*
     float d=0;
     int profinal=0,entfinal=0,resfinal=0;
 
@@ -77,6 +77,6 @@ int main(int argc, char** argv) {
            cout<<"Les entreprises consomment à température rèelle: "<<pourcentage_conso_tr_ent<<"% de la consommation française"<<endl;
            cout<<"Les professionnels consomment à température rèelle: "<<pourcentage_conso_tr_pro<<"% de la consommation française"<<endl;
            cout<<"Les résidents consomment à température rèelle: "<<pourcentage_conso_tr_res<<"% de la consommation française"<<endl;
-
+*/
     return (EXIT_SUCCESS);
 }
