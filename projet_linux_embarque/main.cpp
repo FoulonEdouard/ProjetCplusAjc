@@ -7,6 +7,7 @@
 #include"convertepoch.h"
 #include<algorithm>
 #include<vector>
+#include<math.h>
 
 
 using json = nlohmann::json;
@@ -42,7 +43,7 @@ int main(int argc, char** argv) {
     float d=0;
     int profinal=0,entfinal=0,resfinal=0;
 
-    for(i=0; i<=131;i++){
+   /* for(i=0; i<=131;i++){
     float a=data[i]["fields"]["conso_a_tr"];
     float b=data[i]["fields"]["conso_a_tn"];
     float c=(a/b)*100-100;
@@ -51,7 +52,7 @@ int main(int argc, char** argv) {
     }
     float difftotal=d/132;
     //cout<<difftotal<<"%"<<endl;
-
+*/
         for(i=0; i<=131;i++)
         {
             if(data[i]["fields"]["segment_client"]=="Professionnels")
@@ -162,7 +163,7 @@ int main(int argc, char** argv) {
       // 2EME IMAGE:  HISTOGRAMME
                gdImagePtr im2;
                FILE *pngout2;
-               im2 = gdImageCreate(600,500);
+               im2 = gdImageCreate(1400,600);
                int black2,white2,orange2;
                white2 = gdImageColorAllocate(im2, 255, 255, 255);
                black2 = gdImageColorAllocate(im2, 0, 0, 0);
@@ -176,8 +177,6 @@ int main(int argc, char** argv) {
                    gdImageLine(im2,50,50,565,50,black2);
 
 
-               gdImageLine(im2,40,20,40,400,black2);
-
 
                for(i=0; i<=44;i++)
                {string date3 = HistoryCache::getTimeStamp(mydate[i]);
@@ -186,17 +185,43 @@ int main(int argc, char** argv) {
                      if(data[i2]["fields"]["segment_client"]=="Residentiels")
                       {
                       string datejson=data[i2]["fields"]["date_debut"];
-                      if(datejson==date3){
+                        if(datejson==date3){
                           float a1=data[i]["fields"]["conso_a_tr"];
                           float b1=data[i]["fields"]["conso_a_tn"];
                           float c1=(a1/b1)*100-100;
-                          if(c1<0){c1=c1*(-1);}
-                          gdImageRectangle(im2,40+(i*10),400-(c1*10),50+(i*10),400,orange2);
-                       cout<<datejson<<" à la conso diff    "<<c1<<endl;}
+
+                            if(c1<0){c1=c1*(-1);}
+                              double c2=floor(10*c1)/10;
+                              string c2string=to_string(c2);
+                              gdImageRectangle(im2,40+(i*30),400-(c1*10),70+(i*30),400,orange2);
+
+                              gdImageString(im2, fontptr,
+                                             50+(i*30),
+                                             380-(c1*10),
+                                          (unsigned char*)c2string.c_str(), foreground1);
+
+                              if(i==0 or i==4 or i==8 or i==12 or i==16 or i==20 or i==24 or i==28 or i==32 or i==36 or i==40 or i==43)
+                              {gdImageString(im2, fontptr,
+                                      20+(i*30),
+                                      430,
+                                      (unsigned char*)datejson.c_str(), foreground1);
+                              gdImageLine(im2,55+(i*30),400,55+(i*30),420,black2);}
+
+                       cout<<datejson<<" à la conso diff    "<<c2<<endl;}
                      }
                 }}
 
-               gdImageLine(im2,40,400,550,400,black2);
+               // Axe ordonnée
+               gdImageLine(im2,40,100,40,400,black2);
+               gdImageLine(im2,40,100,30,110,black2);
+               gdImageLine(im2,40,100,50,110,black2);
+
+               // Axe abcisse
+               gdImageLine(im2,40,400,1370,400,black2);
+               gdImageLine(im2,1370,400,1360,410,black2);
+               gdImageLine(im2,1370,400,1360,390,black2);
+
+
                pngout2 = fopen("/home/edouard/projet_linux_embarque/testprojethisto.png", "wb");
                gdImagePng(im2, pngout2);
 
