@@ -25,6 +25,7 @@ int main(int argc, char** argv) {
     int i;
     int i2;
     vector<int> mydate;
+
     //travail date
 
     for(i=0; i<=131;i++){
@@ -36,14 +37,6 @@ int main(int argc, char** argv) {
       mydate.push_back(date2);}}
 
     sort(mydate.begin(),mydate.end());
-    for(i=0; i<=44;i++)
-    {string date3 = HistoryCache::getTimeStamp(mydate[i]);
-        cout<<date3<<endl;
-    }
-
-
-
-/*
 
     //Lectuure dans le JSON
     float d=0;
@@ -97,11 +90,7 @@ int main(int argc, char** argv) {
            float convpro=(pourcentage_conso_tr_pro/100)*360;
 
 
-
-
-*/
-
-            /*
+  //1ERE IMAGE : PIE CHART
            gdImagePtr im;
            FILE *pngout;
            char titre[]={"Conso population"};
@@ -170,33 +159,46 @@ int main(int argc, char** argv) {
                fclose(pngout);
                gdImageDestroy(im);
 
-               // 2 IMAGES HISTOGRAMME
+      // 2EME IMAGE:  HISTOGRAMME
                gdImagePtr im2;
                FILE *pngout2;
-               im2 = gdImageCreate(1400,500);
-               int black2,white2,red2,green2,blue2,orange2,gris2,marron2;
+               im2 = gdImageCreate(600,500);
+               int black2,white2,orange2;
                white2 = gdImageColorAllocate(im2, 255, 255, 255);
                black2 = gdImageColorAllocate(im2, 0, 0, 0);
-               red2 = gdImageColorAllocate(im2, 255, 0, 0);
-               green2 = gdImageColorAllocate(im2, 0, 255, 0);
-               blue2 = gdImageColorAllocate(im2, 0, 0, 255);
                orange2= gdImageColorAllocate(im2, 255, 128, 0);
-               gris2=gdImageColorAllocate(im2, 128, 128, 128);
-               marron2=gdImageColorAllocate(im2, 88, 41, 0);
+               char titre2[]={"difference % residents temperature reelle et normale par semaine"};
+
+               gdImageString(im2, fontptr,
+                           50,
+                           30,
+                           (unsigned char*)titre2, foreground1);
+                   gdImageLine(im2,50,50,565,50,black2);
+
 
                gdImageLine(im2,40,20,40,400,black2);
 
 
-               for(i=0; i<=131;i++){
-               float a1=data[i]["fields"]["conso_a_tr"];
-               float b1=data[i]["fields"]["conso_a_tn"];
-               float c1=(a1/b1)*100-100;
-                  if(c1<0){c1=c1*(-1);}
+               for(i=0; i<=44;i++)
+               {string date3 = HistoryCache::getTimeStamp(mydate[i]);
 
-               gdImageRectangle(im2,40+(i*10),400-(c1*10),50+(i*10),400,orange2);}
-               gdImageLine(im2,40,400,1370,400,black2);
+                 for(i2=0; i2<=131;i2++){
+                     if(data[i2]["fields"]["segment_client"]=="Residentiels")
+                      {
+                      string datejson=data[i2]["fields"]["date_debut"];
+                      if(datejson==date3){
+                          float a1=data[i]["fields"]["conso_a_tr"];
+                          float b1=data[i]["fields"]["conso_a_tn"];
+                          float c1=(a1/b1)*100-100;
+                          if(c1<0){c1=c1*(-1);}
+                          gdImageRectangle(im2,40+(i*10),400-(c1*10),50+(i*10),400,orange2);
+                       cout<<datejson<<" à la conso diff    "<<c1<<endl;}
+                     }
+                }}
+
+               gdImageLine(im2,40,400,550,400,black2);
                pngout2 = fopen("/home/edouard/projet_linux_embarque/testprojethisto.png", "wb");
                gdImagePng(im2, pngout2);
-*/
+
     return (EXIT_SUCCESS);
 }
