@@ -4,10 +4,12 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
+        convertepoch.cpp \
         loader.cpp \
         main.cpp
 
 HEADERS += \
+    convertepoch.h \
     loader.h
 
 LIBS += -lcurl

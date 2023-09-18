@@ -4,6 +4,10 @@
 #include<iostream>
 #include"gd.h"
 #include <gdfontl.h>
+#include"convertepoch.h"
+#include<algorithm>
+#include<vector>
+
 
 using json = nlohmann::json;
 using namespace std;
@@ -19,6 +23,28 @@ int main(int argc, char** argv) {
     json data = json::parse(loader.readBuffer);
 
     int i;
+    int i2;
+    vector<int> mydate;
+    //travail date
+
+    for(i=0; i<=131;i++){
+      if(data[i]["fields"]["segment_client"]=="Residentiels")
+      {
+      string date1=(data[i]["fields"]["date_debut"]);
+      // convert string time to an epoch time
+      const time_t date2 = HistoryCache::convertTimeToEpoch(date1.c_str());
+      mydate.push_back(date2);}}
+
+    sort(mydate.begin(),mydate.end());
+    for(i=0; i<=44;i++)
+    {string date3 = HistoryCache::getTimeStamp(mydate[i]);
+        cout<<date3<<endl;
+    }
+
+
+
+/*
+
     //Lectuure dans le JSON
     float d=0;
     int profinal=0,entfinal=0,resfinal=0;
@@ -70,9 +96,12 @@ int main(int argc, char** argv) {
            float convent=(pourcentage_conso_tr_ent/100)*360;
            float convpro=(pourcentage_conso_tr_pro/100)*360;
 
-            for(i=0; i<=131;i++){
-           cout<<setw(4)<<data[i]["fields"]["date_debut"]<<endl;}
-/*
+
+
+
+*/
+
+            /*
            gdImagePtr im;
            FILE *pngout;
            char titre[]={"Conso population"};
