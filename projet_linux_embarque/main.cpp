@@ -8,7 +8,6 @@
 
 #include"loader.h"                //Classe contenant l'appel avec Curl
 #include"nlohmann/json.hpp"       //Librairie utilisée pour utilisé les fichiers JSON
-//#include<fstream>                 //Récupération flux de données
 #include<iostream>                //Librairie standart pour les entrées/sorties
 #include"gd.h"                    //Librairie graphique utilisée
 #include <gdfontl.h>              //Va avec GD
@@ -78,7 +77,7 @@ int main(int argc, char** argv) {
     sort(mydate.begin(),mydate.end());//Tri les dates epoch dans l'ordre croissant
 
     /**
-    *On va regardé plus loin#include<fstream> dans un diagramme en secteur la consommation utilisée par les trois population donc on fait les calculs de % totaux.\n
+    *On va regardé plus loin dans un diagramme en secteur la consommation utilisée par les trois population donc on fait les calculs de % totaux.\n
     *On va reproduire une boucle avec la population comme contidion pour avoir la consommation total à temps réel:\n
     * for(i=0; i<=131;i++)    \n
     *     {
@@ -389,51 +388,34 @@ float c1=0;
                pngout2 = fopen("/home/edouard/projet_linux_embarque/Consommation_Residents.png", "wb");
                gdImagePng(im2, pngout2);
 
-   /*            // 2EME IMAGE:  HISTOGRAMME Entreprises
+          // 3EME IMAGE:  HISTOGRAMME Entreprises
                         gdImagePtr im3;
                         FILE *pngout3;
 
-                 im2 = gdImageCreate(1500,730);
+                 im3 = gdImageCreate(1500,730);
 
-                 grisfonce2=gdImageColorAllocate(im2, 230, 230, 230); //Pour l'arrière plan de l'image qui prend la première couleur définie
-                 white2 = gdImageColorAllocate(im2, 255, 255, 255);
-                 black2 = gdImageColorAllocate(im2, 0, 0, 0);
-                 orange2= gdImageColorAllocate(im2, 255, 128, 0);
-                 blue2 = gdImageColorAllocate(im2, 0, 0, 255);
-                 marron2=gdImageColorAllocate(im2, 88, 41, 0);
-                 red2 = gdImageColorAllocate(im2, 255, 0, 0);
-                 orange3= gdImageColorAllocate(im2, 205, 88, 0);
-                 blue3 = gdImageColorAllocate(im2, 0, 0, 150);
-                 marron3=gdImageColorAllocate(im2, 44, 20, 0);
-                 red3 = gdImageColorAllocate(im2, 150, 0, 0);
+                 grisfonce2=gdImageColorAllocate(im3, 230, 230, 230); //Pour l'arrière plan de l'image qui prend la première couleur définie
+                 white2 = gdImageColorAllocate(im3, 255, 255, 255);
+                 black2 = gdImageColorAllocate(im3, 0, 0, 0);
+                 orange2= gdImageColorAllocate(im3, 255, 128, 0);
+                 blue2 = gdImageColorAllocate(im3, 0, 0, 255);
+                 marron2=gdImageColorAllocate(im3, 88, 41, 0);
+                 red2 = gdImageColorAllocate(im3, 255, 0, 0);
+                 orange3= gdImageColorAllocate(im3, 205, 88, 0);
+                 blue3 = gdImageColorAllocate(im3, 0, 0, 150);
+                 marron3=gdImageColorAllocate(im3, 44, 20, 0);
+                 red3 = gdImageColorAllocate(im3, 150, 0, 0);
                  char titre3[]={"Differences % consommations pour les Entreprises temperature reelle et normale par semaine"};
 
-                 gdImageString(im2, fontptr,
+                 gdImageString(im3, fontptr,
                               400,
                               30,
                               (unsigned char*)titre3, foreground);
-                 gdImageLine(im2,390,50,1120,50,black2);
+                 gdImageLine(im3,390,50,1120,50,black2);
 
-           /**
-           *Fonctionnement du morceau de code qui suit:\n
-           *1)On va balayé sur les valeurs de la population choisie.\n
-           *2)Voulant utilisé les dates triées on va récupérer notre vector mydate et le remettre au format string. \n
-           *  Cela va permettre à l'aide d'une condition avec nos dates provenant du parse JSON de récupérer les infos au fur et à mesure dans le bon ordre.\n
-           *3)Effectuer le calcul de %.\n
-           *  On va se servir de ces valeurs pour tracer nos rectangles par la suite et on va également les passer au format string pour annoter notre image.\n
-           *4)On écrit les annotations en fonction de si notre résultats de % est positifs ou négatifs.\n
-           *5)On trace les rectangles avec leurs contours, ici le choix a été fait de différentier les saisons de l'année avec un code couleur.\n
-           *  Exemple pour l'hiver:\n
-           *                               if(i>=17 && i<=27) \n
-           *                              {  gdImageFilledRectangle(im2,40+(i*30),400-(c1*10),70+(i*30),400,blue2);\n
-           *                                 gdImageRectangle(im2,40+(i*30),400-(c1*10),70+(i*30),400,blue3);} \n
-           *\n
-           *6)On va également rajouter quelques dates reliées à l'axe avec des pointillés.\n
-           *  Les dates sont choisies pour avoir une semaine par mois et pour la lisibilité.\n
-           *7)les axes seront fait par la suite pour repasser par dessus.\n
-           */
 
-     /*                   for(i=0; i<=44;i++)
+
+                      for(i=0; i<=44;i++)
                         {string date3 = HistoryCache::getTimeStamp(mydate[i]);    //passage de mydate au format string maintenant qu'il est trié
 
                           for(i2=0; i2<=131;i2++){
@@ -453,46 +435,46 @@ float c1=0;
 
                                        //Notation des valeurs en % au bout des barres de l'histogramme
                                        if(c1>=0)
-                                       {gdImageString(im2, fontptr,
+                                       {gdImageString(im3, fontptr,
                                                       40+(i*30),
                                                       380-(c1*10),
                                                    (unsigned char*)c2string.c_str(), foreground);}
                                        if(c1<=0)
-                                       {gdImageString(im2, fontptr,
+                                       {gdImageString(im3, fontptr,
                                              32+(i*30),
                                              410-(c1*10),
                                              (unsigned char*)c2string.c_str(), foreground);}
 
                                        //Tracage de l'histogramme avec des rectangles remplits en fonctions des couleurs+contours
                                        if(i<=3 or i>=41)
-                                        {  gdImageFilledRectangle(im2,40+(i*30),400-(c1*10),70+(i*30),400,red2);
-                                           gdImageRectangle(im2,40+(i*30),400-(c1*10),70+(i*30),400,red3);}
+                                        {  gdImageFilledRectangle(im3,40+(i*30),400-(c1*10),70+(i*30),400,red2);
+                                           gdImageRectangle(im3,40+(i*30),400-(c1*10),70+(i*30),400,red3);}
                                        if(i>=4 && i<=16)
-                                        {  gdImageFilledRectangle(im2,40+(i*30),400-(c1*10),70+(i*30),400,marron2);
-                                           gdImageRectangle(im2,40+(i*30),400-(c1*10),70+(i*30),400,marron3);}
+                                        {  gdImageFilledRectangle(im3,40+(i*30),400-(c1*10),70+(i*30),400,marron2);
+                                           gdImageRectangle(im3,40+(i*30),400-(c1*10),70+(i*30),400,marron3);}
                                        if(i>=17 && i<=27)
-                                        {  gdImageFilledRectangle(im2,40+(i*30),400-(c1*10),70+(i*30),400,blue2);
-                                           gdImageRectangle(im2,40+(i*30),400-(c1*10),70+(i*30),400,blue3);}
+                                        {  gdImageFilledRectangle(im3,40+(i*30),400-(c1*10),70+(i*30),400,blue2);
+                                           gdImageRectangle(im3,40+(i*30),400-(c1*10),70+(i*30),400,blue3);}
                                        if(i>=28 && i<=40)
-                                        {  gdImageFilledRectangle(im2,40+(i*30),400-(c1*10),70+(i*30),400,orange2);
-                                           gdImageRectangle(im2,40+(i*30),400-(c1*10),70+(i*30),400,orange3);}
+                                        {  gdImageFilledRectangle(im3,40+(i*30),400-(c1*10),70+(i*30),400,orange2);
+                                           gdImageRectangle(im3,40+(i*30),400-(c1*10),70+(i*30),400,orange3);}
 
                                        //Tracage pointillé + affichagee de plusieurs dates
                                        if(c1>0 && (i==1 or i==4 or i==8 or i==12 or i==16 or i==20 or i==24 or i==28 or i==31 or i==36 or i==40))
-                                       {gdImageString(im2, fontptr,
+                                       {gdImageString(im3, fontptr,
                                                20+(i*30),
                                                700,
                                                (unsigned char*)datejson.c_str(), foreground);
                                            for(int i3=0;i3<=14;i3++)
-                                           {gdImageLine(im2,55+(i*30),400+(i3*20),55+(i*30),410+(i3*20),black2);}}
+                                           {gdImageLine(im3,55+(i*30),400+(i3*20),55+(i*30),410+(i3*20),black2);}}
 
                                        if(c1<0 && (i==1 or i==4 or i==8 or i==12 or i==16 or i==20 or i==24 or i==28 or i==32 or i==36 or i==40))
-                                       {gdImageString(im2, fontptr,
+                                       {gdImageString(im3, fontptr,
                                                20+(i*30),
                                                100,
                                                (unsigned char*)datejson.c_str(), foreground);
                                            for(int i3=0;i3<=13;i3++)
-                                           {gdImageLine(im2,55+(i*30),390-(i3*20),55+(i*30),400-(i3*20),black2);}}
+                                           {gdImageLine(im3,55+(i*30),390-(i3*20),55+(i*30),400-(i3*20),black2);}}
 
                                // cout<<datejson<<" à la conso diff    "<<c2string<<endl;
                                  }
@@ -500,48 +482,181 @@ float c1=0;
                          }}
 
                         // Axe ordonnée
-                        gdImageLine(im2,40,80,40,680,black2);
-                        gdImageLine(im2,40,80,30,90,black2);
-                        gdImageLine(im2,40,80,50,90,black2);
-                        gdImageLine(im2,40,680,30,670,black2);
-                        gdImageLine(im2,40,680,50,670,black2);
+                        gdImageLine(im3,40,80,40,680,black2);
+                        gdImageLine(im3,40,80,30,90,black2);
+                        gdImageLine(im3,40,80,50,90,black2);
+                        gdImageLine(im3,40,680,30,670,black2);
+                        gdImageLine(im3,40,680,50,670,black2);
 
-                        gdImageString(im2, fontptr,
+                        gdImageString(im3, fontptr,
                                        10,
                                        65,
                                     (unsigned char*)axeordo, foreground);
 
                         // Axe abcisse
-                        gdImageLine(im2,40,400,1410,400,black2);
-                        gdImageLine(im2,1410,400,1400,410,black2);
-                        gdImageLine(im2,1410,400,1400,390,black2);
+                        gdImageLine(im3,40,400,1410,400,black2);
+                        gdImageLine(im3,1410,400,1400,410,black2);
+                        gdImageLine(im3,1410,400,1400,390,black2);
 
-                        gdImageString(im2, fontptr,
+                        gdImageString(im3, fontptr,
                                        1370,
                                        420,
                                     (unsigned char*)axeabs, foreground);
 
                         //Légende
 
-                         gdImageFilledRectangle(im2,1320,50,1370,70,red2);
-                         gdImageFilledRectangle(im2,1320,80,1370,100,marron2);
-                         gdImageFilledRectangle(im2,1320,110,1370,130,blue2);
-                         gdImageFilledRectangle(im2,1320,140,1370,160,orange2);
-                         gdImageRectangle(im2,1320,50,1370,70,red3);
-                         gdImageRectangle(im2,1320,80,1370,100,marron3);
-                         gdImageRectangle(im2,1320,110,1370,130,blue3);
-                         gdImageRectangle(im2,1320,140,1370,160,orange3);
-                         gdImageString(im2, fontptr, 1320, 25, (unsigned char*)legende,foreground);
-                         gdImageLine(im2,1320,40,1380,40,black2);
-                         gdImageString(im2, fontptr, 1380, 55, (unsigned char*)ete,foreground);
-                         gdImageString(im2, fontptr, 1380, 85, (unsigned char*)automne,foreground);
-                         gdImageString(im2, fontptr, 1380, 115, (unsigned char*)hiver,foreground);
-                         gdImageString(im2, fontptr, 1380, 145, (unsigned char*)printemps,foreground);
+                         gdImageFilledRectangle(im3,1320,50,1370,70,red2);
+                         gdImageFilledRectangle(im3,1320,80,1370,100,marron2);
+                         gdImageFilledRectangle(im3,1320,110,1370,130,blue2);
+                         gdImageFilledRectangle(im3,1320,140,1370,160,orange2);
+                         gdImageRectangle(im3,1320,50,1370,70,red3);
+                         gdImageRectangle(im3,1320,80,1370,100,marron3);
+                         gdImageRectangle(im3,1320,110,1370,130,blue3);
+                         gdImageRectangle(im3,1320,140,1370,160,orange3);
+                         gdImageString(im3, fontptr, 1320, 25, (unsigned char*)legende,foreground);
+                         gdImageLine(im3,1320,40,1380,40,black2);
+                         gdImageString(im3, fontptr, 1380, 55, (unsigned char*)ete,foreground);
+                         gdImageString(im3, fontptr, 1380, 85, (unsigned char*)automne,foreground);
+                         gdImageString(im3, fontptr, 1380, 115, (unsigned char*)hiver,foreground);
+                         gdImageString(im3, fontptr, 1380, 145, (unsigned char*)printemps,foreground);
 
                         pngout3 = fopen("/home/edouard/projet_linux_embarque/Consommation_Entreprises.png", "wb");
                         gdImagePng(im3, pngout3);
 
-*/
+                        // 3EME IMAGE:  HISTOGRAMME Entreprises
+                                      gdImagePtr im4;
+                                      FILE *pngout4;
+
+                               im4 = gdImageCreate(1500,730);
+
+                               grisfonce2=gdImageColorAllocate(im4, 230, 230, 230); //Pour l'arrière plan de l'image qui prend la première couleur définie
+                               white2 = gdImageColorAllocate(im4, 255, 255, 255);
+                               black2 = gdImageColorAllocate(im4, 0, 0, 0);
+                               orange2= gdImageColorAllocate(im4, 255, 128, 0);
+                               blue2 = gdImageColorAllocate(im4, 0, 0, 255);
+                               marron2=gdImageColorAllocate(im4, 88, 41, 0);
+                               red2 = gdImageColorAllocate(im4, 255, 0, 0);
+                               orange3= gdImageColorAllocate(im4, 205, 88, 0);
+                               blue3 = gdImageColorAllocate(im4, 0, 0, 150);
+                               marron3=gdImageColorAllocate(im4, 44, 20, 0);
+                               red3 = gdImageColorAllocate(im4, 150, 0, 0);
+                               char titre4[]={"Differences % consommations pour les Professionnels temperature reelle et normale par semaine"};
+
+                               gdImageString(im4, fontptr,
+                                            400,
+                                            30,
+                                            (unsigned char*)titre4, foreground);
+                               gdImageLine(im4,390,50,1120,50,black2);
+
+
+
+                                    for(i=0; i<=44;i++)
+                                      {string date3 = HistoryCache::getTimeStamp(mydate[i]);    //passage de mydate au format string maintenant qu'il est trié
+
+                                        for(i2=0; i2<=131;i2++){
+                                            if(data[i2]["fields"]["segment_client"]=="Professionnels")  //Travail sur les Résidentiels
+                                             {
+                                             string datejson=data[i2]["fields"]["date_debut"];     //Récupération date_debut dans le JSON
+                                               if(datejson==date3){                                //Condition qui va nous permettre+les boucles d'avoir les dates dans le bon ordre
+
+                                                 //Calcul %
+                                                 a1=data[i2]["fields"]["conso_a_tr"];
+                                                 b1=data[i2]["fields"]["conso_a_tn"];
+                                                 c1=(a1/b1)*100-100;
+
+                                                 //Récupération valeurs % en string et on ne garde qu'un chiffre après la virgule ,utilisation de floor pour arrondir au préalable
+                                                 string c2string=to_string(floor(10*c1)/10);
+                                                 if(!c2string.empty()){c2string.resize(c2string.size()-5);}
+
+                                                     //Notation des valeurs en % au bout des barres de l'histogramme
+                                                     if(c1>=0)
+                                                     {gdImageString(im4, fontptr,
+                                                                    40+(i*30),
+                                                                    380-(c1*10),
+                                                                 (unsigned char*)c2string.c_str(), foreground);}
+                                                     if(c1<=0)
+                                                     {gdImageString(im4, fontptr,
+                                                           32+(i*30),
+                                                           410-(c1*10),
+                                                           (unsigned char*)c2string.c_str(), foreground);}
+
+                                                     //Tracage de l'histogramme avec des rectangles remplits en fonctions des couleurs+contours
+                                                     if(i<=3 or i>=41)
+                                                      {  gdImageFilledRectangle(im4,40+(i*30),400-(c1*10),70+(i*30),400,red2);
+                                                         gdImageRectangle(im4,40+(i*30),400-(c1*10),70+(i*30),400,red3);}
+                                                     if(i>=4 && i<=16)
+                                                      {  gdImageFilledRectangle(im4,40+(i*30),400-(c1*10),70+(i*30),400,marron2);
+                                                         gdImageRectangle(im4,40+(i*30),400-(c1*10),70+(i*30),400,marron3);}
+                                                     if(i>=17 && i<=27)
+                                                      {  gdImageFilledRectangle(im4,40+(i*30),400-(c1*10),70+(i*30),400,blue2);
+                                                         gdImageRectangle(im4,40+(i*30),400-(c1*10),70+(i*30),400,blue3);}
+                                                     if(i>=28 && i<=40)
+                                                      {  gdImageFilledRectangle(im4,40+(i*30),400-(c1*10),70+(i*30),400,orange2);
+                                                         gdImageRectangle(im4,40+(i*30),400-(c1*10),70+(i*30),400,orange3);}
+
+                                                     //Tracage pointillé + affichagee de plusieurs dates
+                                                     if(c1>0 && (i==1 or i==4 or i==8 or i==12 or i==16 or i==20 or i==24 or i==28 or i==31 or i==36 or i==40))
+                                                     {gdImageString(im4, fontptr,
+                                                             20+(i*30),
+                                                             700,
+                                                             (unsigned char*)datejson.c_str(), foreground);
+                                                         for(int i3=0;i3<=14;i3++)
+                                                         {gdImageLine(im4,55+(i*30),400+(i3*20),55+(i*30),410+(i3*20),black2);}}
+
+                                                     if(c1<0 && (i==1 or i==4 or i==8 or i==12 or i==16 or i==20 or i==24 or i==28 or i==32 or i==36 or i==40))
+                                                     {gdImageString(im4, fontptr,
+                                                             20+(i*30),
+                                                             100,
+                                                             (unsigned char*)datejson.c_str(), foreground);
+                                                         for(int i3=0;i3<=13;i3++)
+                                                         {gdImageLine(im4,55+(i*30),390-(i3*20),55+(i*30),400-(i3*20),black2);}}
+
+                                             // cout<<datejson<<" à la conso diff    "<<c2string<<endl;
+                                               }
+                                            }
+                                       }}
+
+                                      // Axe ordonnée
+                                      gdImageLine(im4,40,80,40,680,black2);
+                                      gdImageLine(im4,40,80,30,90,black2);
+                                      gdImageLine(im4,40,80,50,90,black2);
+                                      gdImageLine(im4,40,680,30,670,black2);
+                                      gdImageLine(im4,40,680,50,670,black2);
+
+                                      gdImageString(im4, fontptr,
+                                                     10,
+                                                     65,
+                                                  (unsigned char*)axeordo, foreground);
+
+                                      // Axe abcisse
+                                      gdImageLine(im4,40,400,1410,400,black2);
+                                      gdImageLine(im4,1410,400,1400,410,black2);
+                                      gdImageLine(im4,1410,400,1400,390,black2);
+
+                                      gdImageString(im4, fontptr,
+                                                     1370,
+                                                     420,
+                                                  (unsigned char*)axeabs, foreground);
+
+                                      //Légende
+
+                                       gdImageFilledRectangle(im4,1320,50,1370,70,red2);
+                                       gdImageFilledRectangle(im4,1320,80,1370,100,marron2);
+                                       gdImageFilledRectangle(im4,1320,110,1370,130,blue2);
+                                       gdImageFilledRectangle(im4,1320,140,1370,160,orange2);
+                                       gdImageRectangle(im4,1320,50,1370,70,red3);
+                                       gdImageRectangle(im4,1320,80,1370,100,marron3);
+                                       gdImageRectangle(im4,1320,110,1370,130,blue3);
+                                       gdImageRectangle(im4,1320,140,1370,160,orange3);
+                                       gdImageString(im4, fontptr, 1320, 25, (unsigned char*)legende,foreground);
+                                       gdImageLine(im4,1320,40,1380,40,black2);
+                                       gdImageString(im4, fontptr, 1380, 55, (unsigned char*)ete,foreground);
+                                       gdImageString(im4, fontptr, 1380, 85, (unsigned char*)automne,foreground);
+                                       gdImageString(im4, fontptr, 1380, 115, (unsigned char*)hiver,foreground);
+                                       gdImageString(im4, fontptr, 1380, 145, (unsigned char*)printemps,foreground);
+
+                                      pngout4 = fopen("/home/edouard/projet_linux_embarque/Consommation_Professionels.png", "wb");
+                                      gdImagePng(im4, pngout4);
 
 
 
