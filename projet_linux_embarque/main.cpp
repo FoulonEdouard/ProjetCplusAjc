@@ -6,9 +6,26 @@
 *@Version 1.0
 */
 
+/**
+* @mainpage
+* Le but de ce programme est à travers la récupération d'un Url en OpenData d'obtenir des graphiques en C/C++:\n
+* L'Url selectionné ici sera :https://www.data.gouv.fr/fr/datasets/r/ecb94e56-22d4-40ee-bf40-c7890569d5bd.\n
+* Il s'agit d'un OpenData provenant de l'entreprise ENEDIS qui met en valeurs les différences de consommations électriques selon la température en France.\n
+* Il y aura 3 populations étudiées dans ces données:Résidents,Professionnels et Entreprises .\n
+* Les termes Tr et Tn feront respectivement références à :Température réelle et Température normale(basée sur les 30 dernières années hors aléa climatique)\n
+* \n
+* Ce programme est écrit pour fonctionner sous Debian et sous Buildroot avec unee carte qemu.\n
+* La première partie du programme va récupérer les informations du fichier JSON à l'Url demandée.\n
+* La 2ème partie est un prétravail sur le JSON pour récupérée les données trié et certains calculs déjà effectués en vu des graphiques.\n
+* La dernière partie correspond aux différents graphiques avec la librairie GD.\n
+*\n
+* La commandes de compilation utilisée pour la qemu:\n
+* Pour la qemu:/home/edouard/buildroot-2023.08/output/host/bin/aarch64-linux-g++ -o progarmgd main.cpp loader.cpp convertepoch.cpp -lcurl -lgd -lpng -lm -lstdc++fs
+*/
+
+
 #include"loader.h"                //Classe contenant l'appel avec Curl
 #include"nlohmann/json.hpp"       //Librairie utilisée pour utilisé les fichiers JSON
-#include<iostream>                //Librairie standart pour les entrées/sorties
 #include"gd.h"                    //Librairie graphique utilisée
 #include <gdfontl.h>              //Va avec GD
 #include"convertepoch.h"          //Classe contennant 2 méthodes pour passer une date en epoch et inversement
@@ -17,27 +34,10 @@
 #include<math.h>                  //Pour l'arrondi sur les floats
 
 
-/**
- * @brief
- * Le but de ce programme est à travers la récupération d'un Url en OpenData d'obtenir des graphiques en C/C++:\n
- * L'Url selectionné ici sera :https://www.data.gouv.fr/fr/datasets/r/ecb94e56-22d4-40ee-bf40-c7890569d5bd.\n
- * Il s'agit d'un OpenData provenant de l'entreprise ENEDIS qui met en valeurs les différences de consommations électriques selon la température en France.\n
- * Il y aura 3 populations étudiées dans ces données:Résidents,Professionnels et Entreprises .\n
- * Les termes Tr et Tn feront respectivement références à :Température réelle et Température normale(basée sur les 30 dernières années hors aléa climatique)\n
- * \n
- * Ce programme est écrit pour fonctionner sous Debian et sous Buildroot avec unee carte qemu.\n
- * La première partie du programme va récupérer les informations du fichier JSON à l'Url demandée.\n
- * La 2ème partie est un prétravail sur le JSON pour récupérée les données trié et certains calculs déjà effectués en vu des graphiques.\n
- * La dernière partie correspond aux différents graphiques avec la librairie GD.\n
- *\n
- * La commandes de compilation utilisée pour la qemu:\n
- * Pour la qemu:/home/edouard/buildroot-2023.08/output/host/bin/aarch64-linux-g++ -o progarmgd main.cpp loader.cpp convertepoch.cpp -lcurl -lgd -lpng -lm -lstdc++fs
- */
 
 //Utilisations namespaces pour simplifié le programme
-using json = nlohmann::json;
 using namespace std;
-
+using json = nlohmann::json;
 /**
  * \fn main  \n
  * @brief entrée du programme  \n
@@ -77,11 +77,13 @@ int main(int argc, char** argv) {
     sort(mydate.begin(),mydate.end());//Tri les dates epoch dans l'ordre croissant
 
     /**
+    *@brief
+    *\n
     *On va regardé plus loin dans un diagramme en secteur la consommation utilisée par les trois population donc on fait les calculs de % totaux.\n
     *On va reproduire une boucle avec la population comme contidion pour avoir la consommation total à temps réel:\n
     * for(i=0; i<=131;i++)    \n
-    *     {
-    *       if(data[i]["fields"]["segment_client"]=="Professionnels")  \n
+    *    {                     \n
+    * if(data[i]["fields"]["segment_client"]=="Professionnels")  \n
     *       {int j=data[i]["fields"]["conso_a_tr"];   \n
     *        profinal+=j;}   \n
     *     } \n
@@ -124,6 +126,7 @@ int main(int argc, char** argv) {
  float convpro=(pourcentage_conso_tr_pro/100)*360;
 
  /**
+ *\n
  *Un premier graphique en secteur avec la librairie GD indiquant le % de consommation à Tr par population.\n
  *Ce graphique comme les suivants sera au format png.\n
  */
@@ -163,11 +166,12 @@ int main(int argc, char** argv) {
            foreground3=gdImageColorAllocate(im, 255, 128, 0);
 
   /**
+  *\n
   *On rajoutera une chaîne de caractère sur une image avec le format  suivant:\n
-  *gdImageString(im, fontptr,                                       //choix de l'image et appel fontptr   \n
-  *                     180,                                         //Coordonnée axe des x    \n
-  *                     40,                                          //Coordonnée axe des y avec le 0 en partant du haut   \n
-  *                     (unsigned char*)titre, foreground);          //Appel de la chaîne de caractère et de sa couleur     \n
+  *gdImageString(im, fontptr,                                          \n
+  *                     180,                                           \n
+  *                     40,                                         \n
+  *                     (unsigned char*)titre, foreground);             \n
   *On utilisera également des lignes que ce soit pour souligner/légendes/axes : gdImageLine(im,180,60,315,60,black) avec (image,x1,y1,x2,y2,couleur)  \n
   */
            //Titre souligné + Légende couleurs
@@ -196,6 +200,7 @@ int main(int argc, char** argv) {
                gdImageLine(im,230,460,240,460,orange);
 
    /**
+   *\n
    *Pour le diagramme en secteur on va définir un rayon puis tracer différents arc de cercle en fonctions des % obtenue précédemment.\n
    *Pour un cercle :   gdImageFilledArc (im,100 + cor_rad, 400 - cor_rad, cor_rad *2, cor_rad *2, 360, 360, white, gdPie); \n
    *On modifie les angles pour avoir  un arc de cercle , ici 360,360 correspond à un cercle entier.\n
@@ -213,6 +218,7 @@ int main(int argc, char** argv) {
 
 
   /**
+  *\n
   *Les fichiers images seront dans le répertoire ~/projet_linux_embarque qui a était reproduit dans l'overlay buildroot.\n
   */
              //Ouverture image.png avec l'image tracé précédemment
@@ -225,6 +231,7 @@ int main(int argc, char** argv) {
 
 
    /**
+   *\n
    *La 2ème image est un histogramme de la différence en % entre la consommation à Tr et à Tn en fonction de la date.\n
    *De la même manière on paramètre taille de l'image/couleurs/foreground/format et position du fichier.\n
    *L'histogramme sera construit sur une succession de rectangle avec gdImageFilledRectangle(im2,x1,y1,x2,y2,color); \n
@@ -256,22 +263,57 @@ int main(int argc, char** argv) {
         gdImageLine(im2,390,50,1120,50,black2);
 
   /**
-  *Fonctionnement du morceau de code qui suit:\n
-  *1)On va balayé sur les valeurs de la population choisie.\n
-  *2)Voulant utilisé les dates triées on va récupérer notre vector mydate et le remettre au format string. \n
+  *\n
+  *Fonctionnement du morceau de code qui suit pour l''histogramme:\n
+  *\n
+  *ETAPE1 :Voulant utilisé les dates triées on va récupérer notre vector mydate et le remettre au format string. \n
   *  Cela va permettre à l'aide d'une condition avec nos dates provenant du parse JSON de récupérer les infos au fur et à mesure dans le bon ordre.\n
-  *3)Effectuer le calcul de %.\n
-  *  On va se servir de ces valeurs pour tracer nos rectangles par la suite et on va également les passer au format string pour annoter notre image.\n
-  *4)On écrit les annotations en fonction de si notre résultats de % est positifs ou négatifs.\n
-  *5)On trace les rectangles avec leurs contours, ici le choix a été fait de différentier les saisons de l'année avec un code couleur.\n
+  *  \n
+  *  for(i=0; i<=44;i++)\n
+  *            {string date3 = HistoryCache::getTimeStamp(mydate[i]);\n
+  * \n
+  *ETAPE2:On va balayé sur les valeurs de la population choisie:\n
+  *\n
+  *for(i2=0; i2<=131;i2++){\n
+  *                 if(data[i2]["fields"]["segment_client"]=="Residentiels")\n
+  *                 \n
+  *ETAPE 3: le calcul de %.\n
+  *  On va se servir de ces valeurs pour tracer nos rectangles par la suite et on va également les passer au format string 1 chiffre après la virugle pour annoter notre image.\n
+  *  \n
+  *                       a1=data[i2]["fields"]["conso_a_tr"]; \n
+  *                       b1=data[i2]["fields"]["conso_a_tn"]; \n
+  *                       c1=(a1/b1)*100-100;\n
+  *                       string c2string=to_string(floor(10*c1)/10);\n
+  *                       if(!c2string.empty()){c2string.resize(c2string.size()-5);}\n
+  *                       \n
+  *ETAPE 4:On écrit les annotations en fonction de si notre résultats de % est positifs ou négatifs.Exemple valeur positivess:\n
+  *\n
+  * if(c1>=0)\n
+  *                           {gdImageString(im2, fontptr,\n
+  *                                          40+(i*30),\n
+  *                                           380-(c1*10),\n
+  *                                        (unsigned char*)c2string.c_str(), foreground);}\n
+  *                                        \n
+  *ETAPE 5:On trace les rectangles avec leurs contours, ici le choix a été fait de différentier les saisons de l'année avec un code couleur.\n
   *  Exemple pour l'hiver:\n
+  *  \n
   *                               if(i>=17 && i<=27) \n
   *                              {  gdImageFilledRectangle(im2,40+(i*30),400-(c1*10),70+(i*30),400,blue2);\n
   *                                 gdImageRectangle(im2,40+(i*30),400-(c1*10),70+(i*30),400,blue3);} \n
+  *                                 \n
+  *ETAPE 6:On va également rajouter quelques dates reliées à l'axe avec des pointillés.\n
   *\n
-  *6)On va également rajouter quelques dates reliées à l'axe avec des pointillés.\n
-  *  Les dates sont choisies pour avoir une semaine par mois et pour la lisibilité.\n
-  *7)les axes seront fait par la suite pour repasser par dessus.\n
+  *if(c1>0 && (i==1 or i==4 or i==8 or i==12 or i==16 or i==20 or i==24 or i==28 or i==31 or i==36 or i==40))\n
+  *                            {gdImageString(im2, fontptr,\n
+  *                                    20+(i*30),\n
+  *                                    700,\n
+  *                                    (unsigned char*)datejson.c_str(), foreground);\n
+  *                                for(int i3=0;i3<=14;i3++)\n
+  *                                {gdImageLine(im2,55+(i*30),400+(i3*20),55+(i*30),410+(i3*20),black2);}}\n
+  *\n
+  * Les dates sont choisies pour avoir une semaine par mois et pour la lisibilité.\n
+  * \n
+  *ETAPE 7:les axes et la legende seront fait par la suite pour repasser par dessus.\n
   */
 float a1=0;
 float b1=0;
