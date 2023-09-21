@@ -7,13 +7,22 @@ Loader::Loader()
 {
 
 }
-
+/**
+ * @fn static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp)
+ * fonction pour écrire la taille des données que l'on récupère avec le load\n
+ */
 static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp)
 {
     ((std::string*)userp)->append((char*)contents, size * nmemb);
     return size * nmemb;
 }
 
+/**
+ * @fn void Loader::load(const std::string &url)
+ * La fonction utilisant la librairie CURL pour aller récupéré nos données sur un url ici https et les enregistrer sur le readBuffer)\n
+ * @param url
+ * Correspond à notre Url.\n
+ */
 void Loader::load(const std::string &url)
 {
         CURL *curl = curl_easy_init();

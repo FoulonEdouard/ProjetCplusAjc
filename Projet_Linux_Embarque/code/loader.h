@@ -22,7 +22,7 @@ public:
      */
     void load(const std::string &url);
     /**
-     * @brief on va créer un readBuffer qui va récupérer l'information du JSON
+     * @brief On va créer un readBuffer qui va récupérer l'information du JSON
      */
     std::string readBuffer;
 };

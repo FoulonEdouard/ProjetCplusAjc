@@ -21,7 +21,7 @@ public:
     HistoryCache();
     /**
      * @fn static std::string getTimeStamp(time_t epochTime, const char* format = "%Y-%m-%d")
-     * @brief la fonction qui va renvoyé une date au format string
+     * La fonction qui va renvoyé une date epoch au format string
      */
 
     static std::string getTimeStamp(time_t epochTime, const char* format = "%Y-%m-%d")
@@ -33,7 +33,7 @@ public:
 
     /**
      * @fn static time_t convertTimeToEpoch(const char* theTime, const char* format = "%Y-%m-%d")
-     * @brief la fonction qui va renvoyé une date au format epoch
+     * La fonction qui va renvoyé une date au format epoch
      */
     static time_t convertTimeToEpoch(const char* theTime, const char* format = "%Y-%m-%d")
     {

@@ -34,13 +34,13 @@
 #include<math.h>                  //Pour l'arrondi sur les floats
 
 
-
 //Utilisations namespaces pour simplifié le programme
 using namespace std;
 using json = nlohmann::json;
 
 /**
- *@fn void secteur()
+ *@fn void secteur(string temperature)
+ *@param temperature va permettre le choix entre une étude à température réelle ou normale.\n
  *@brief Va créer un diagramme en secteur. \n
  *Un premier graphique en secteur avec la librairie GD indiquant le % de consommation à Tr par population.\n
  *Ce graphique comme les suivants sera au format png.\n
@@ -55,7 +55,7 @@ using json = nlohmann::json;
  *     } \n
  */
 
-void secteur()
+void secteur(string temperature)
 {
     int i=0;
     int i2=0;
@@ -71,7 +71,7 @@ void secteur()
 
     //Variables de stockages des résultats pour les consommations totales
     int profinal=0,entfinal=0,resfinal=0;
-
+    int profinaln=0,entfinaln=0,resfinaln=0;
 
         for(i=0; i<=131;i++)
            {
@@ -93,17 +93,44 @@ void secteur()
                resfinal+=j;}
            }
 
+         // Pour température normale
+         for(i=0; i<=131;i++)
+            {
+             if(data[i]["fields"]["segment_client"]=="Professionnels")
+             {int j=data[i]["fields"]["conso_a_tn"];
+             profinaln+=j;}
+            }
+
+         for(i=0; i<=131;i++)
+            {
+              if(data[i]["fields"]["segment_client"]=="Entreprises")
+              {int j=data[i]["fields"]["conso_a_tn"];
+              entfinaln+=j;}
+            }
+          for(i=0; i<=131;i++)
+            {
+                if(data[i]["fields"]["segment_client"]=="Residentiels")
+                {int j=data[i]["fields"]["conso_a_tn"];
+                resfinaln+=j;}
+            }
+
  // passage des totaux en %
  float  consotrtotale=resfinal+entfinal+profinal;
+ float  consotrtotalen=resfinaln+entfinaln+profinaln;
  float  pourcentage_conso_tr_ent=(entfinal/consotrtotale)*100;
  float  pourcentage_conso_tr_pro=(profinal/consotrtotale)*100;
  float  pourcentage_conso_tr_res=(resfinal/consotrtotale)*100;
+ float  pourcentage_conso_tn_ent=(entfinaln/consotrtotalen)*100;
+ float  pourcentage_conso_tn_pro=(profinaln/consotrtotalen)*100;
+ float  pourcentage_conso_tn_res=(resfinaln/consotrtotalen)*100;
 
  //Préparation des variables pour le diagramme en secteur
  float convres=(pourcentage_conso_tr_res/100)*360;
  float convent=(pourcentage_conso_tr_ent/100)*360;
  float convpro=(pourcentage_conso_tr_pro/100)*360;
-
+ float convresn=(pourcentage_conso_tn_res/100)*360;
+ float conventn=(pourcentage_conso_tn_ent/100)*360;
+ float convpron=(pourcentage_conso_tn_pro/100)*360;
 
 
 
@@ -111,10 +138,10 @@ void secteur()
     FILE *pngout;   // Création du fichier.png
 
 //Chaîne de caratères titre et légende
-char titre[30]={"Conso population"};
-char s1[30]={"conso residents a tr"};
-char s2[30]={"conso profesionnels a tr"};
-char s3[30]={"conso entreprises a tr"};
+
+char s1[30]={"conso residents :"};
+char s2[30]={"conso profesionnels :"};
+char s3[30]={"conso entreprises :"};
 
 
     im = gdImageCreate(500, 500);  //Image de taille 500x500
@@ -141,49 +168,143 @@ char s3[30]={"conso entreprises a tr"};
     foreground2 =gdImageColorAllocate(im, 0, 0, 255);
     foreground3=gdImageColorAllocate(im, 255, 128, 0);
 
+    if(temperature=="reelle"){
+    char titre[40]={"Consommation selon la population a tr"};
     gdImageString(im, fontptr,
-                180,
+                100,
                 40,
                 (unsigned char*)titre, foreground);
-        gdImageLine(im,180,60,315,60,black);
+        gdImageLine(im,100,60,400,60,black);
+
+    string trrstring=to_string(floor(10*pourcentage_conso_tr_res)/10);
+    if(!trrstring.empty()){trrstring.resize(trrstring.size()-5);}
+    string ftrr=trrstring+" %";
 
         gdImageString(im, fontptr,
                 250 ,
                 410 ,
                 (unsigned char*)s1, foreground1);
+        gdImageString(im, fontptr,
+                390 ,
+                410 ,
+                (unsigned char*)ftrr.c_str(), foreground1);
         gdImageLine(im,230,420,240,420,red);
 
+        string tprstring=to_string(floor(10*pourcentage_conso_tr_pro)/10);
+        if(!tprstring.empty()){tprstring.resize(tprstring.size()-5);}
+        string ftpr=tprstring+" %";
         gdImageString(im, fontptr,
                 250,
                 430,
                 (unsigned char*)s2, foreground2);
-        gdImageLine(im,230,440,240,440,blue);
+        gdImageString(im, fontptr,
+                420,
+                430,
+                (unsigned char*)ftpr.c_str(), foreground2);
 
+        string terstring=to_string(floor(10*pourcentage_conso_tr_ent)/10);
+        if(!terstring.empty()){terstring.resize(terstring.size()-5);}
+        string fepr=terstring+" %";
+        gdImageLine(im,230,440,240,440,blue);
         gdImageString(im, fontptr,
                 250,
                 450 ,
                 (unsigned char*)s3, foreground3);
-        gdImageLine(im,230,460,240,460,orange);
+        gdImageString(im, fontptr,
+                410,
+                450 ,
+                (unsigned char*)fepr.c_str(), foreground3);
+        gdImageLine(im,230,460,240,460,orange);}
+
+
+
+    if(temperature=="normale"){
+    char titre[40]={"Consommation selon la population a tn"};
+    gdImageString(im, fontptr,
+                100,
+                40,
+                (unsigned char*)titre, foreground);
+        gdImageLine(im,100,60,400,60,black);
+
+    string trnstring=to_string(floor(10*pourcentage_conso_tn_res)/10);
+    if(!trnstring.empty()){trnstring.resize(trnstring.size()-5);}
+    string ftrn=trnstring+" %";
+
+        gdImageString(im, fontptr,
+                250 ,
+                410 ,
+                (unsigned char*)s1, foreground1);
+        gdImageString(im, fontptr,
+                390 ,
+                410 ,
+                (unsigned char*)ftrn.c_str(), foreground1);
+        gdImageLine(im,230,420,240,420,red);
+
+        string tpnstring=to_string(floor(10*pourcentage_conso_tn_pro)/10);
+        if(!tpnstring.empty()){tpnstring.resize(tpnstring.size()-5);}
+        string ftpn=tpnstring+" %";
+        gdImageString(im, fontptr,
+                250,
+                430,
+                (unsigned char*)s2, foreground2);
+        gdImageString(im, fontptr,
+                420,
+                430,
+                (unsigned char*)ftpn.c_str(), foreground2);
+
+        string tenstring=to_string(floor(10*pourcentage_conso_tn_ent)/10);
+        if(!tenstring.empty()){tenstring.resize(tenstring.size()-5);}
+        string fepn=tenstring+" %";
+        gdImageLine(im,230,440,240,440,blue);
+        gdImageString(im, fontptr,
+                250,
+                450 ,
+                (unsigned char*)s3, foreground3);
+        gdImageString(im, fontptr,
+                410,
+                450 ,
+                (unsigned char*)fepn.c_str(), foreground3);
+        gdImageLine(im,230,460,240,460,orange);}
+
 
         int cor_rad = 150;
-
+        if(temperature=="reelle")
+        {
                     //cercle blanc si cercle n'est pas remplit puis arc de cercle successifs
                      gdImageFilledArc (im,100 + cor_rad, 400 - cor_rad, cor_rad *2, cor_rad *2, 360, 360, white, gdPie);
-                     gdImageFilledArc (im,100 + cor_rad, 400 - cor_rad, cor_rad *2, cor_rad *2, 360, convent, red, gdPie);
-                     gdImageFilledArc (im,100 + cor_rad, 400 - cor_rad, cor_rad *2, cor_rad *2, convent, convent+convres, blue, gdPie);
-                     gdImageFilledArc (im,100 + cor_rad, 400 - cor_rad, cor_rad *2, cor_rad *2, convent+convres, convent+convpro+convres, orange, gdPie);
-                     gdImageArc(im,100 + cor_rad, 400 - cor_rad, cor_rad *2, cor_rad *2, 360, convent, redcont);
-                     gdImageArc (im,100 + cor_rad, 400 - cor_rad, cor_rad *2, cor_rad *2, convent, convent+convres, bluecont);
-                     gdImageArc (im,100 + cor_rad, 400 - cor_rad, cor_rad *2, cor_rad *2, convent+convres, convent+convpro+convres, orangecont);
+                     gdImageFilledArc (im,100 + cor_rad, 400 - cor_rad, cor_rad *2, cor_rad *2, 360, convres, red, gdPie);
+                     gdImageFilledArc (im,100 + cor_rad, 400 - cor_rad, cor_rad *2, cor_rad *2, convres, convpro+convent, blue, gdPie);
+                     gdImageFilledArc (im,100 + cor_rad, 400 - cor_rad, cor_rad *2, cor_rad *2, convpro+convres, convent+convpro+convres, orange, gdPie);
+                     gdImageArc(im,100 + cor_rad, 400 - cor_rad, cor_rad *2, cor_rad *2, 360, convres, redcont);
+                     gdImageArc (im,100 + cor_rad, 400 - cor_rad, cor_rad *2, cor_rad *2, convres, convpro+convres, bluecont);
+                     gdImageArc (im,100 + cor_rad, 400 - cor_rad, cor_rad *2, cor_rad *2, convpro+convres, convent+convpro+convres, orangecont);
 
                      //Ouverture image.png avec l'image tracé précédemment
-                    pngout = fopen("/home/edouard/projet_linux_embarque/Secteur_Consommation_Totale.png", "wb");
+                    pngout = fopen("/home/edouard/projet_linux_embarque/Secteur_Consommation_Totale_tr.png", "wb");
                      gdImagePng(im, pngout);
 
                      //Fermeture et nettoyage mémoire
                      fclose(pngout);
-                     gdImageDestroy(im);
-                     return;
+                     gdImageDestroy(im);}
+        if(temperature=="normale")
+        {
+                    //cercle blanc si cercle n'est pas remplit puis arc de cercle successifs
+                     gdImageFilledArc (im,100 + cor_rad, 400 - cor_rad, cor_rad *2, cor_rad *2, 360, 360, white, gdPie);
+                     gdImageFilledArc (im,100 + cor_rad, 400 - cor_rad, cor_rad *2, cor_rad *2, 360, convresn, red, gdPie);
+                     gdImageFilledArc (im,100 + cor_rad, 400 - cor_rad, cor_rad *2, cor_rad *2, convresn, convpron+convresn, blue, gdPie);
+                     gdImageFilledArc (im,100 + cor_rad, 400 - cor_rad, cor_rad *2, cor_rad *2, convpron+convresn, conventn+convpron+convresn, orange, gdPie);
+                     gdImageArc(im,100 + cor_rad, 400 - cor_rad, cor_rad *2, cor_rad *2, 360, convresn, redcont);
+                     gdImageArc (im,100 + cor_rad, 400 - cor_rad, cor_rad *2, cor_rad *2, convresn, convpron+convresn, bluecont);
+                     gdImageArc (im,100 + cor_rad, 400 - cor_rad, cor_rad *2, cor_rad *2, convpron+convresn, conventn+convpron+convresn, orangecont);
+
+                     //Ouverture image.png avec l'image tracé précédemment
+                    pngout = fopen("/home/edouard/projet_linux_embarque/Secteur_Consommation_Totale_tn.png", "wb");
+                     gdImagePng(im, pngout);
+
+                     //Fermeture et nettoyage mémoire
+                     fclose(pngout);
+                     gdImageDestroy(im);}
+
 }
 
 /**
@@ -301,13 +422,13 @@ foreground = gdImageColorAllocate(im2, 0, 0, 0);
 foreground1 =gdImageColorAllocate(im2, 255, 0, 0);
 foreground2 =gdImageColorAllocate(im2, 0, 0, 255);
 foreground3=gdImageColorAllocate(im2, 255, 128, 0);
-char titre2[]={"Differences % consommations a température reelle et normale par semaine"};
+char titre2[]={"Differences % consommations a temperature reelle et normale par semaine"};
 
 gdImageString(im2, fontptr,
           400,
           30,
           (unsigned char*)titre2, foreground);
-gdImageLine(im2,390,50,1120,50,black2);
+gdImageLine(im2,390,50,1000,50,black2);
 
 float a1=0;
 float b1=0;
@@ -394,10 +515,10 @@ float c1=0;
                gdImageLine(im2,40,400,1410,400,black2);
                gdImageLine(im2,1410,400,1400,410,black2);
                gdImageLine(im2,1410,400,1400,390,black2);
-               char axeabs[50]="Date deb_semaine";
+               char axeabs[50]="Date debut semaine";
                gdImageString(im2, fontptr,
-                              1370,
-                              420,
+                              1330,
+                              450,
                            (unsigned char*)axeabs, foreground);
 
                //Légende
@@ -426,7 +547,7 @@ float c1=0;
                if(population=="Entreprises")
                pngout2 = fopen("/home/edouard/projet_linux_embarque/Consommation_Entreprises.png", "wb");
                if(population=="Professionnels")
-               pngout2 = fopen("/home/edouard/projet_linux_embarque/Consommation_Professionnels", "wb");
+               pngout2 = fopen("/home/edouard/projet_linux_embarque/Consommation_Professionnels.png", "wb");
                gdImagePng(im2, pngout2);
 return;
 }
@@ -445,10 +566,12 @@ int main(int argc, char** argv) {
     string r="Residentiels";
     string e="Entreprises";
     string p="Professionnels";
+
     histogramme(r);
     histogramme(p);
     histogramme(e);
-    secteur();
+    secteur("reelle");
+    secteur("normale");
 
 
     return (EXIT_SUCCESS);
