@@ -39,10 +39,9 @@
 using namespace std;
 using json = nlohmann::json;
 
-
-
 /**
- *@fn void secteur()  va créer un diagramme en secteur \n
+ *@fn void secteur()
+ *@brief Va créer un diagramme en secteur. \n
  *Un premier graphique en secteur avec la librairie GD indiquant le % de consommation à Tr par population.\n
  *Ce graphique comme les suivants sera au format png.\n
  *\n
@@ -54,7 +53,6 @@ using json = nlohmann::json;
  *       {int j=data[i]["fields"]["conso_a_tr"];   \n
  *        profinal+=j;}   \n
  *     } \n
- *@return
  */
 
 void secteur()
@@ -185,31 +183,55 @@ char s3[30]={"conso entreprises a tr"};
                      //Fermeture et nettoyage mémoire
                      fclose(pngout);
                      gdImageDestroy(im);
+                     return;
 }
 
-
-
+/**
+*@fn void histogramme(string population)
+*@param population permet de choisir la population entre Résidentiels , Entreprises , Professionnels\n
+*/
+/**
+*@fn void histogramme(string population)
+*@brief C'est une fonction pour construire un histogramme.\n
+*On aura donc plusieurs  histogrammes de la différence en % entre la consommation à Tr et à Tn en fonction de la date.\n
+*De la même manière on paramètre taille de l'image/couleurs/foreground/format et position du fichier.\n
+*L'histogramme sera construit sur une succession de rectangle avec gdImageFilledRectangle(im2,x1,y1,x2,y2,color); \n
+* De la même manière on paramètre taille de l'image/couleurs/foreground/format et position du fichier.\n
+*L'histogramme sera construit sur une succession de rectangle avec gdImageFilledRectangle(im2,x1,y1,x2,y2,color); \n
+*\n
+* Une fois le Json récupéré on voit à sa lecture que les dates ne sont pas dans le bons ordres et font des doublons.\n
+*On va stocké la colonne date_debut convertie au format epoch dans un vector mydate que l'on pourra trier.\n
+*L'idée sera pas la suite de se servir de ce vector pour faire correspondre les dates du JSON pour l'obtenir dans l'ordre.\n
+*\n
+*\n
+*Le morceau principal du programme effectue plusieurs étapes:\n
+*-->PREMIERE ETAPE:On récupère le vector mydate que l'on remet au format string pour  le comparer avec les dates du JSON \n
+*On met également la condition sur la population pour le reste de la boucle.\n
+*for(i=0; i<=44;i++)\n
+*               {string date3 = HistoryCache::getTimeStamp(mydate[i]);   \n
+*                for(i2=0; i2<=131;i2++){ \n
+*                    if(data[i2]["fields"]["segment_client"]==population)  \n
+*                     {\n
+*                     string datejson=data[i2]["fields"]["date_debut"];     \n
+*                        if(datejson==date3){                               \n
+*\n
+*-->DEUXIEME ETAPE:\n
+*On effectue les calculs souhaités pour obtenir les % ici et on prépare leur écriture sous formmat string pour les mettre sur l''histogramme (1 chiffres après la virgule)\n
+*a1=data[i2]["fields"]["conso_a_tr"];\n
+*b1=data[i2]["fields"]["conso_a_tn"];\n
+*c1=(a1/b1)*100-100\n
+*string c2string=to_string(floor(10*c1)/10);\n
+*if(!c2string.empty()){c2string.resize(c2string.size()-5);}\n
+*\n
+*-->TROISIEME ETAPE:\n
+*On trace l'histogramme avec une suite de rectangle + des couleurs selon les saisons. Ici exemple avec l'hiver:\n
+* if(i>=17 && i<=27)\n
+*                     {  gdImageFilledRectangle(im2,40+(i*30),400-(c1*10),70+(i*30),400,blue2);\n
+*                        gdImageRectangle(im2,40+(i*30),400-(c1*10),70+(i*30),400,blue3);}\n
+*\n
+*/
 void histogramme(string population)
 {
-    /**
-    *@fn void histogramme() est une fonction pour construire un histogramme\n
-    *@param population permet de choisir la population entre Résidentiels , Entreprises , Professionnels\n
-    */
-
-    /**
-    *@fn On aura donc plusieurs  histogrammes de la différence en % entre la consommation à Tr et à Tn en fonction de la date.\n
-    *De la même manière on paramètre taille de l'image/couleurs/foreground/format et position du fichier.\n
-    *L'histogramme sera construit sur une succession de rectangle avec gdImageFilledRectangle(im2,x1,y1,x2,y2,color); \n
-    * De la même manière on paramètre taille de l'image/couleurs/foreground/format et position du fichier.\n
-    *L'histogramme sera construit sur une succession de rectangle avec gdImageFilledRectangle(im2,x1,y1,x2,y2,color); \n
-    *\n
-    *\n
-    * Une fois le Json récupéré on voit à sa lecture que les dates ne sont pas dans le bons ordres et font des doublons.\n
-    *On va stocké la colonne date_debut convertie au format epoch dans un vector mydate que l'on pourra trier.\n
-    *L'idée sera pas la suite de se servir de ce vector pour faire correspondre les dates du JSON pour l'obtenir dans l'ordre.\n
-    */
-
-
 
     int i=0;
     int i2=0;
@@ -220,14 +242,6 @@ void histogramme(string population)
     json data = json::parse(loader.readBuffer);
 
     //récupère le fichier et crée un parse JSON
-
-    /**
-    *@brief Une fois le Json récupéré on voit à sa lecture que les dates ne sont pas dans le bons ordres et font des doublons.\n
-    *On va stocké la colonne date_debut convertie au format epoch dans un vector mydate que l'on pourra trier.\n
-    *L'idée sera pas la suite de se servir de ce vector pour faire correspondre les dates du JSON pour l'obtenir dans l'ordre.\n
-    *@fn De la même manière on paramètre taille de l'image/couleurs/foreground/format et position du fichier.\n
-    *L'histogramme sera construit sur une succession de rectangle avec gdImageFilledRectangle(im2,x1,y1,x2,y2,color); \n
-    */
 
     vector<int> mydate;
 
@@ -245,10 +259,6 @@ void histogramme(string population)
     gdImagePtr im2;
     FILE *pngout2;
 
- /**
- *@fn De la même manière on paramètre taille de l'image/couleurs/foreground/format et position du fichier.\n
- *L'histogramme sera construit sur une succession de rectangle avec gdImageFilledRectangle(im2,x1,y1,x2,y2,color); \n
- */
 
 im2 = gdImageCreate(1500,730);
 int grisfonce2;
@@ -400,13 +410,12 @@ float c1=0;
                if(population=="Professionnels")
                pngout2 = fopen("/home/edouard/projet_linux_embarque/Consommation_Professionnels", "wb");
                gdImagePng(im2, pngout2);
-
-
+return;
 }
 
 
 /**
- * \fn main  \n
+ * @fn int main(int argc, char** argv)
  * @brief entrée du programme  \n
  * @return EXIT_SUCCES arrêt normal du programme\n
  */
