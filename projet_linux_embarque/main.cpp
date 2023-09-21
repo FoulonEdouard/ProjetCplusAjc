@@ -229,6 +229,24 @@ char s3[30]={"conso entreprises a tr"};
 *                     {  gdImageFilledRectangle(im2,40+(i*30),400-(c1*10),70+(i*30),400,blue2);\n
 *                        gdImageRectangle(im2,40+(i*30),400-(c1*10),70+(i*30),400,blue3);}\n
 *\n
+*-->QUATRIEME ETAPE:\n
+*On remplit les annotations et on ajoute des pointillés pour les dates en faisant attention à ne pas les mettre du même côté que les barres de l'histogramme(environ 1 date par mois).\n
+*Exemple annotations %:\n
+*                             if(c1>=0)\n
+*                             {gdImageString(im2, fontptr,\n
+*                                             40+(i*30),\n
+*                                            380-(c1*10),\n
+*                                         (unsigned char*)c2string.c_str(), foreground);}\n
+*Exemple annotation dates:\n
+* if(c1>0 && (i==1 or i==4 or i==8 or i==12 or i==16 or i==20 or i==24 or i==28 or i==31 or i==36 or i==40))\n
+*                              {gdImageString(im2, fontptr,\n
+*                                      20+(i*30),\n
+*                                     700,\n
+*                                      (unsigned char*)datejson.c_str(), foreground);\n
+*                                 for(int i3=0;i3<=14;i3++)\n
+*                                 {gdImageLine(im2,55+(i*30),400+(i3*20),55+(i*30),410+(i3*20),black2);}}  \n
+* \n
+* Les axes + légendes sont générés à la suite.\n
 */
 void histogramme(string population)
 {
