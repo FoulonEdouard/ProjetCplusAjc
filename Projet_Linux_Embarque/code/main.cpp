@@ -398,7 +398,6 @@ void histogramme(string population)
     gdImagePtr im2;
     FILE *pngout2;
 
-
 im2 = gdImageCreate(1500,730);
 int grisfonce2;
 grisfonce2=gdImageColorAllocate(im2, 230, 230, 230); //Pour l'arrière plan de l'image qui prend la première couleur définie
@@ -499,6 +498,7 @@ float c1=0;
                      }
                 }}
 
+
                // Axe ordonnée
                gdImageLine(im2,40,80,40,680,black2);
                gdImageLine(im2,40,80,30,90,black2);
@@ -549,8 +549,14 @@ float c1=0;
                if(population=="Professionnels")
                pngout2 = fopen("/home/edouard/projet_linux_embarque/Consommation_Professionnels.png", "wb");
                gdImagePng(im2, pngout2);
+
+
+               gdImageDestroy(im2);
+              // cout<<setw(4)<<data<<endl;
 return;
 }
+
+
 
 
 /**
