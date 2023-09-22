@@ -21,7 +21,13 @@
 *\n
 * La commandes de compilation utilisée pour la qemu:\n
 * Pour la qemu:/home/edouard/buildroot-2023.08/output/host/bin/aarch64-linux-g++ -o progarmgd main.cpp loader.cpp convertepoch.cpp -lcurl -lgd -lpng -lm -lstdc++fs
+*\n
+*On obtiendra des visualisations telles que les 2 exemples suivants:\n
+*@image html Consommation_Professionnels.png
+*\n
+*@image  html Secteur_Consommation_Totale_tr.png
 */
+
 
 
 #include"loader.h"                //Classe contenant l'appel avec Curl
@@ -55,10 +61,11 @@ using json = nlohmann::json;
  *     } \n
  */
 
+
+
 void secteur(string temperature)
 {
     int i=0;
-    int i2=0;
 
     //Appel classe Loader pour récupérer l'Url
     Loader loader;
@@ -280,7 +287,7 @@ char s3[30]={"conso entreprises :"};
                      gdImageArc (im,100 + cor_rad, 400 - cor_rad, cor_rad *2, cor_rad *2, convpro+convres, convent+convpro+convres, orangecont);
 
                      //Ouverture image.png avec l'image tracé précédemment
-                    pngout = fopen("/home/edouard/projet_linux_embarque/Secteur_Consommation_Totale_tr.png", "wb");
+                     pngout = fopen("/home/edouard/projet_linux_embarque/Secteur_Consommation_Totale_tr.png", "wb");
                      gdImagePng(im, pngout);
 
                      //Fermeture et nettoyage mémoire
@@ -304,7 +311,10 @@ char s3[30]={"conso entreprises :"};
                      //Fermeture et nettoyage mémoire
                      fclose(pngout);
                      gdImageDestroy(im);}
-
+/**
+*@image  html Secteur_Consommation_Totale_tr.png
+*@image  html Secteur_Consommation_Totale_tn.png
+*/
 }
 
 /**
@@ -421,13 +431,6 @@ foreground = gdImageColorAllocate(im2, 0, 0, 0);
 foreground1 =gdImageColorAllocate(im2, 255, 0, 0);
 foreground2 =gdImageColorAllocate(im2, 0, 0, 255);
 foreground3=gdImageColorAllocate(im2, 255, 128, 0);
-char titre2[]={"Differences % consommations a temperature reelle et normale par semaine"};
-
-gdImageString(im2, fontptr,
-          400,
-          30,
-          (unsigned char*)titre2, foreground);
-gdImageLine(im2,390,50,1000,50,black2);
 
 float a1=0;
 float b1=0;
@@ -542,31 +545,64 @@ float c1=0;
                 gdImageString(im2, fontptr, 1380, 115, (unsigned char*)hiver,foreground);
                 gdImageString(im2, fontptr, 1380, 145, (unsigned char*)printemps,foreground);
 
-               if(population=="Residentiels")
-               pngout2 = fopen("/home/edouard/projet_linux_embarque/Consommation_Residelentiels.png", "wb");
+                if(population=="Residentiels")
+                {char titre2[100]={"Differences % consommations RESIDENTIELS a temperature reelle et normale par semaine"};
+
+                                   gdImageString(im2, fontptr,
+                                             400,
+                                             30,
+                                             (unsigned char*)titre2, foreground);
+                                    gdImageLine(im2,400,50,1070,50,black2);}
+                if(population=="Entreprises")
+                {char titre3[100]={"Differences % consommations ENTRPRISES a temperature reelle et normale par semaine"};
+
+                                   gdImageString(im2, fontptr,
+                                             400,
+                                             30,
+                                             (unsigned char*)titre3, foreground);
+                                    gdImageLine(im2,400,50,1070,50,black2);}
+                if(population=="Professionnels")
+                {char titre4[100]={"Differences % consommations PROFESSIONNELS a temperature reelle et normale par semaine"};
+
+                                   gdImageString(im2, fontptr,
+                                             400,
+                                             30,
+                                             (unsigned char*)titre4, foreground);
+                                    gdImageLine(im2,400,50,1070,50,black2);}
+
+
+                if(population=="Professionnels")
+                  {pngout2 = fopen("/home/edouard/projet_linux_embarque/Consommation_Professionnels.png", "wb");
+                   gdImagePng(im2, pngout2);
+                   gdImageDestroy(im2);}
+                if(population=="Residentiels")
+                  {pngout2 = fopen("/home/edouard/projet_linux_embarque/Consommation_Residentiels.png", "wb");
+                  gdImagePng(im2, pngout2);
+                  gdImageDestroy(im2);}
                if(population=="Entreprises")
-               pngout2 = fopen("/home/edouard/projet_linux_embarque/Consommation_Entreprises.png", "wb");
-               if(population=="Professionnels")
-               pngout2 = fopen("/home/edouard/projet_linux_embarque/Consommation_Professionnels.png", "wb");
-               gdImagePng(im2, pngout2);
+                 {pngout2 = fopen("/home/edouard/projet_linux_embarque/Consommation_Entreprises.png", "wb");
+                  gdImagePng(im2, pngout2);
+                  gdImageDestroy(im2);}
 
 
-               gdImageDestroy(im2);
-              // cout<<setw(4)<<data<<endl;
-return;
+
+
+    /**
+    *@brief exemple d'un histogramme:
+    *@image html Consommation_Professionnels.png
+    */
+
+
 }
 
-
-
-
 /**
- * @fn int main(int argc, char** argv)
+ * @fn int main()
  * @brief entrée du programme  \n
  * @return EXIT_SUCCES arrêt normal du programme\n
  */
 
 
-int main(int argc, char** argv) {
+int main() {
 
 
     string r="Residentiels";
@@ -579,6 +615,29 @@ int main(int argc, char** argv) {
     secteur("reelle");
     secteur("normale");
 
+/**
+*@brief Au final on observe quand pour les diagrammes en secteurs ( voir fonction secteur()) il y a très peu de différences entre température réelle et normale.\n
+*Par contre on va voir des différences pour les 3 histogrammes ; on va les comparer au fur et à mesure.\n
+*-->En premier celui pour les professionnels:
+*@image html Consommation_Professionnels.png
+*\n
+*On observe de gros efforts de consommations par rapport aux dernières années sur les saisons froides , automne et hiver à savoir les périodes sobriétés énergétiques.\n
+*Par contre une hausse légère depuis le retour du printemps et que la sobriété est moins mise en avant\n
+*\n
+*-->En deuxieme celui pour les Entreprises:
+*@image html Consommation_Entreprises.png
+*\n
+*On fait les mêmess observations que pour les professionnels mais avec des écarts plus léger.\n
+*Cela parait logique la plupart des entreprises vont avoir plus de mal à augmenter ou diminuer drastiquement leurs consommations étant souvent sur des consommations déjà très  importante.\n
+*\n
+*-->En 3ème celui pour les résidentiels:
+*@image html Consommation_Residentiels.png
+*\n
+*On voit une tendance similaire sur les saisons mais un effort sur l'été qui vient de se dérouler contrairement au deux autres.\n
+*Par contre les écarts sont bien plus importants on atteint des différences supérieurs à 20% en positifs comme en négatifs.\n
+*On peut conclure que globalement les mesures de sobriétés ont été bien suivit en automne et hiver avec un bilan positif en économie d'énergie sur la majorité des semaines.\n
+*Mais la tendance s'inverse sur les périodes chaudes où la consommations augmente pour les entreprises et professionnels.\n
+*/
 
     return (EXIT_SUCCESS);
 }
