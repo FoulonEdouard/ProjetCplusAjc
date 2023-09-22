@@ -47,7 +47,7 @@ using json = nlohmann::json;
 /**
  *@fn void secteur(string temperature)
  *@param temperature va permettre le choix entre une étude à température réelle ou normale.\n
- *@brief Va créer un diagramme en secteur. \n
+ *Va créer un diagramme en secteur. \n
  *Un premier graphique en secteur avec la librairie GD indiquant le % de consommation à Tr par population.\n
  *Ce graphique comme les suivants sera au format png.\n
  *\n
@@ -59,6 +59,10 @@ using json = nlohmann::json;
  *       {int j=data[i]["fields"]["conso_a_tr"];   \n
  *        profinal+=j;}   \n
  *     } \n
+ *Une fois le calcul de % finit on peut tracer nos secteurs en faisant des arcs de cercles qui se suivent avec  l'utilisation de:\n
+ *   gdImageFilledArc (im,100 + cor_rad, 400 - cor_rad, cor_rad *2, cor_rad *2, 360, convres, red, gdPie);\n
+ *   Puis on rajoute la légende/titre.\n
+ *   Et utilisant gd on pense à fermer le fichier ouvert + détruire l'image pour la mémoire.
  */
 
 
@@ -318,12 +322,14 @@ char s3[30]={"conso entreprises :"};
 }
 
 /**
-*@fn void histogramme(string population)
+*@fn void histogramme(string population,int option)
 *@param population permet de choisir la population entre Résidentiels , Entreprises , Professionnels\n
+*@param option permet si l'on met option=1 d'avoir un tracé de la tendance température réelle sur la température normale.\n
+*@warning ce tracé optionnel n'est qu'une tendance , il est n'est pas à la même échelle et est inverser pour suivre l'histogramme. Mais cela permet de vérifier si l'on a bien une consommation positive pour une température plus basse qu'attendue par exemple.
 */
 /**
-*@fn void histogramme(string population)
-*@brief C'est une fonction pour construire un histogramme.\n
+*@fn void histogramme(string population,int option)
+*C'est une fonction pour construire un histogramme.\n
 *On aura donc plusieurs  histogrammes de la différence en % entre la consommation à Tr et à Tn en fonction de la date.\n
 *De la même manière on paramètre taille de l'image/couleurs/foreground/format et position du fichier.\n
 *L'histogramme sera construit sur une succession de rectangle avec gdImageFilledRectangle(im2,x1,y1,x2,y2,color); \n
@@ -379,7 +385,7 @@ char s3[30]={"conso entreprises :"};
 * \n
 * Les axes + légendes sont à la suite.\n
 */
-void histogramme(string population)
+void histogramme(string population,int option)
 {
 
     int i=0;
@@ -502,6 +508,32 @@ float c1=0;
                 }}
 
 
+               //Option courbe tendance
+               if(option==1){
+               int tmp=400;
+               for(i=0; i<=44;i++)
+               {string date3 = HistoryCache::getTimeStamp(mydate[i]);
+
+                 for(i2=0; i2<=131;i2++){
+                     if(data[i2]["fields"]["segment_client"]==population)
+                      {
+                      string datejson=data[i2]["fields"]["date_debut"];
+                        if(datejson==date3){
+
+                          a1=data[i2]["fields"]["temp_moy_a_tr"];
+                          b1=data[i2]["fields"]["temp_moy_a_tn"];
+                          c1=(a1/b1)*100-100;
+                          //float c2=c1*(-1);
+
+                                  int y2=400-(c1);
+                                  gdImageLine(im2,55+(i*30),tmp,85+(i*30),y2,black2);
+                                  tmp=y2;
+
+                       }}
+                     }
+                }}
+
+
                // Axe ordonnée
                gdImageLine(im2,40,80,40,680,black2);
                gdImageLine(im2,40,80,30,90,black2);
@@ -554,7 +586,7 @@ float c1=0;
                                              (unsigned char*)titre2, foreground);
                                     gdImageLine(im2,400,50,1070,50,black2);}
                 if(population=="Entreprises")
-                {char titre3[100]={"Differences % consommations ENTRPRISES a temperature reelle et normale par semaine"};
+                {char titre3[100]={"Differences % consommations ENTREPRISES a temperature reelle et normale par semaine"};
 
                                    gdImageString(im2, fontptr,
                                              400,
@@ -570,7 +602,7 @@ float c1=0;
                                              (unsigned char*)titre4, foreground);
                                     gdImageLine(im2,400,50,1070,50,black2);}
 
-
+              if(option==0){
                 if(population=="Professionnels")
                   {pngout2 = fopen("/home/edouard/projet_linux_embarque/Consommation_Professionnels.png", "wb");
                    gdImagePng(im2, pngout2);
@@ -583,6 +615,24 @@ float c1=0;
                  {pngout2 = fopen("/home/edouard/projet_linux_embarque/Consommation_Entreprises.png", "wb");
                   gdImagePng(im2, pngout2);
                   gdImageDestroy(im2);}
+              }
+
+
+              if(option==1){
+                if(population=="Professionnels")
+                  {pngout2 = fopen("/home/edouard/projet_linux_embarque/Consommation_Professionnels_opt.png", "wb");
+                   gdImagePng(im2, pngout2);
+                   gdImageDestroy(im2);}
+                if(population=="Residentiels")
+                  {pngout2 = fopen("/home/edouard/projet_linux_embarque/Consommation_Residentiels_opt.png", "wb");
+                  gdImagePng(im2, pngout2);
+                  gdImageDestroy(im2);}
+               if(population=="Entreprises")
+                 {pngout2 = fopen("/home/edouard/projet_linux_embarque/Consommation_Entreprises_opt.png", "wb");
+                  gdImagePng(im2, pngout2);
+                  gdImageDestroy(im2);}
+              }
+
 
 
 
@@ -609,9 +659,9 @@ int main() {
     string e="Entreprises";
     string p="Professionnels";
 
-    histogramme(r);
-    histogramme(p);
-    histogramme(e);
+    histogramme(r,1);
+    histogramme(p,0);
+    histogramme(e,0);
     secteur("reelle");
     secteur("normale");
 
@@ -637,6 +687,9 @@ int main() {
 *Par contre les écarts sont bien plus importants on atteint des différences supérieurs à 20% en positifs comme en négatifs.\n
 *On peut conclure que globalement les mesures de sobriétés ont été bien suivit en automne et hiver avec un bilan positif en économie d'énergie sur la majorité des semaines.\n
 *Mais la tendance s'inverse sur les périodes chaudes où la consommations augmente pour les entreprises et professionnels.\n
+*\n
+*-->Avec l'ajout du tracé de tendance pour la température on observe que en règle générale on a bien le fait que si tr > tn alors conso tr  <  conso tn sauf l'été pour entreprises et professionnel.\n
+*@image html Consommation_Residentiels_opt.png
 */
 
     return (EXIT_SUCCESS);
